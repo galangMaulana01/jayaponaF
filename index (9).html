@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JAYAPONA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;450;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script>
+        window.BACKEND_URL = 'https://phonejaya.vercel.app';
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Geist', 'system-ui', 'sans-serif'],
+                        mono: ['Geist Mono', 'monospace'],
+                    },
+                    colors: {
+                        surface: {
+                            DEFAULT: '#ffffff',
+                            dark: '#0a0a0a',
+                        },
+                        brand: {
+                            purple: '#7c3aed',
+                            blue: '#3b82f6',
+                            dark: '#0a0a12',
+                        }
+                    },
+                    keyframes: {
+                        fadeUp: { from: { opacity: 0, transform: 'translateY(8px)' }, to: { opacity: 1,
+                                transform: 'translateY(0)' } },
+                        fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
+                        slideIn: { from: { opacity: 0, transform: 'translateX(-8px)' }, to: { opacity: 1,
+                                transform: 'translateX(0)' } },
+                        shimmer: { '0%': { backgroundPosition: '200% 0' }, '100%': { backgroundPosition: '-200% 0' } },
+                        spin: { to: { transform: 'rotate(360deg)' } },
+                        toastIn: { from: { opacity: 0, transform: 'translateX(100%)' }, to: { opacity: 1,
+                                transform: 'translateX(0)' } },
+                        pulse: { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } },
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.2s ease-out',
+                        'fade-in': 'fadeIn 0.15s ease-out',
+                        'slide-in': 'slideIn 0.18s ease-out',
+                        shimmer: 'shimmer 1.4s ease infinite',
+                        spin: 'spin 0.7s linear infinite',
+                        toast: 'toastIn 0.28s ease-out',
+                        pulse: 'pulse 2s cubic-bezier(0.4,0,0.6,1) infinite',
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Geist', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            background: #0a0a12;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2a3a;
+            border-radius: 99px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #374151;
+        }
+
+        html {
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .sidebar-width {
+            width: 240px;
+            min-width: 240px;
+        }
+
+        /* Nav items - Airline Sim style */
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 450;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+        .nav-link:hover {
+            background: #1a1a26;
+            color: #e5e7eb;
+        }
+        .nav-link.active {
+            background: #3b82f6;
+            color: #fff;
+            font-weight: 500;
+        }
+        .nav-link.active svg {
+            color: #fff;
+        }
+
+        /* Dark form fields */
+        .field {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            border: 1px solid #1f1f2a;
+            background: #111118;
+            color: #f9fafb;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            font-family: inherit;
+        }
+        .field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+        }
+        .field::placeholder {
+            color: #4b5563;
+        }
+
+        /* Buttons - Airline Sim style */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: #3b82f6;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #2563eb;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+            transform: translateY(-0.5px);
+        }
+        .btn-ghost {
+            background: transparent;
+            color: #9ca3af;
+            border: 1px solid #1f1f2a;
+        }
+        .btn-ghost:hover {
+            background: #1a1a26;
+            color: #f9fafb;
+            border-color: #2a2a3a;
+        }
+        .btn-success {
+            background: #10b981;
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Table rows */
+        .tbl-row {
+            border-bottom: 1px solid #1a1a26;
+            transition: background 0.08s;
+        }
+        .tbl-row:hover {
+            background: #14141e;
+        }
+        .tbl-row:last-child {
+            border-bottom: none;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            border: 1px solid;
+        }
+        .badge-tersedia {
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        .badge-sold {
+            background: rgba(248, 113, 113, 0.1);
+            color: #f87171;
+            border-color: rgba(248, 113, 113, 0.2);
+        }
+        .badge-booking {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            border-color: rgba(251, 191, 36, 0.2);
+        }
+        .badge-service {
+            background: rgba(96, 165, 250, 0.1);
+            color: #60a5fa;
+            border-color: rgba(96, 165, 250, 0.2);
+        }
+        .badge-masuk {
+            background: rgba(107, 114, 128, 0.1);
+            color: #9ca3af;
+            border-color: rgba(107, 114, 128, 0.2);
+        }
+        .badge-diagnosa {
+            background: rgba(251, 146, 60, 0.1);
+            color: #fb923c;
+            border-color: rgba(251, 146, 60, 0.2);
+        }
+        .badge-proses {
+            background: rgba(96, 165, 250, 0.1);
+            color: #60a5fa;
+            border-color: rgba(96, 165, 250, 0.2);
+        }
+        .badge-selesai {
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        .badge-diambil {
+            background: rgba(156, 163, 175, 0.1);
+            color: #6b7280;
+            border-color: rgba(156, 163, 175, 0.2);
+        }
+
+        /* Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #1a1a26 25%, #222230 50%, #1a1a26 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s ease infinite;
+            border-radius: 8px;
+        }
+
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.65s linear infinite;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .toast {
+            animation: toast 0.28s ease-out;
+        }
+
+        .modal-bg {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .sidebar-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .filter-tab {
+            padding: 4px 14px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 450;
+            color: #6b7280;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: transparent;
+            transition: all 0.1s;
+            font-family: inherit;
+        }
+        .filter-tab:hover {
+            background: #1a1a26;
+            color: #d1d5db;
+        }
+        .filter-tab.active {
+            background: #3b82f6;
+            color: #fff;
+            border-color: #3b82f6;
+        }
+
+        .progress-track {
+            height: 4px;
+            background: #1f1f2a;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.4s ease;
+        }
+
+        .svc-card {
+            border: 1px solid #1f1f2a;
+            border-radius: 12px;
+            padding: 16px;
+            background: #111118;
+            transition: border-color 0.15s;
+        }
+        .svc-card:hover {
+            border-color: #2a2a3a;
+        }
+
+        .label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #1f1f2a;
+        }
+
+        .theme-toggle {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid #1f1f2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: transparent;
+            color: #6b7280;
+            transition: all 0.15s;
+        }
+        .theme-toggle:hover {
+            background: #1a1a26;
+            color: #f9fafb;
+        }
+
+        .hamburger {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+        }
+
+        .battery-track {
+            width: 36px;
+            height: 4px;
+            background: #1f1f2a;
+            border-radius: 99px;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px !important;
+        }
+
+        /* Starry background effect */
+        .bg-starry {
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(124, 58, 237, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+                #0a0a12;
+        }
+    </style>
+</head>
+
+<body class="bg-starry text-gray-200 min-h-screen transition-colors duration-200">
+
+    <!-- ═══════════ TOAST ═══════════ -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ═══════════ MODAL ═══════════ -->
+    <div id="modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 modal-bg" onclick="closeModal(event)">
+        <div class="bg-[#111118] rounded-2xl w-full max-w-md shadow-2xl animate-fade-up max-h-[90vh] overflow-y-auto border border-[#1f1f2a]" onclick="event.stopPropagation()">
+            <div id="modal-body" class="p-5"></div>
+        </div>
+    </div>
+
+    <!-- ═══════════ MOBILE SIDEBAR OVERLAY ═══════════ -->
+    <div id="sidebar-overlay" class="hidden fixed inset-0 z-40 sidebar-overlay" onclick="closeMobileSidebar()"></div>
+
+    <!-- ═══════════════════════════════
+     PAGE: LOGIN
+    ════════════════════════════════ -->
+    <div id="page-login" class="min-h-screen flex items-center justify-center p-4 bg-[#0a0a12]">
+        <div class="w-full max-w-sm">
+            <main class="bg-[#111118] p-8 rounded-2xl shadow-xl w-full max-w-md border border-[#1f1f2a]">
+                <form class="flex flex-col gap-4">
+                    <h1 class="text-xl font-bold text-center mb-2 text-gray-200">Login</h1>
+                    <label class="font-medium text-xs text-gray-400">Username</label>
+                    <input id="login-user" class="bg-slate-500/5 p-2.5 rounded-xl outline-none border border-[#1f1f2a] focus:border-brand-blue transition-colors text-gray-200 placeholder-gray-500" placeholder="Masukkan username">
+                    <label class="font-medium text-xs text-gray-400">Password</label>
+                    <input id="login-pass" type="password" class="bg-slate-500/5 p-2.5 rounded-xl outline-none border border-[#1f1f2a] focus:border-brand-blue transition-colors text-gray-200 placeholder-gray-500" placeholder="Masukkan password">
+                    <div id="login-error" class="hidden text-xs text-red-400 bg-red-950/20 rounded-lg px-3 py-2.5 border border-red-900/30"></div>
+                    <button id="login-btn" onclick="doLogin()" class="btn btn-primary w-full py-3 rounded-xl text-sm font-semibold">Masuk</button>
+                </form>
+            </main>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+     PAGE: APP
+    ════════════════════════════════ -->
+    <div id="page-app" class="hidden min-h-screen">
+
+        <!-- Mobile topbar -->
+        <div class="md:hidden fixed top-0 left-0 right-0 z-30 bg-[#0a0a12] border-b border-[#1f1f1f] px-4 h-12 flex items-center justify-between">
+            <button class="hamburger items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:bg-[#1a1a26] transition-colors" onclick="openMobileSidebar()">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <span class="text-sm font-semibold text-gray-200 tracking-tight">JAYAPONA</span>
+            <button onclick="toggleTheme()" class="theme-toggle">
+                <svg class="w-3.5 h-3.5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+                <svg class="w-3.5 h-3.5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            </button>
+        </div>
+
+        <!-- ─── SIDEBAR ─────────────────── -->
+        <aside id="app-sidebar" class="sidebar-width fixed top-0 left-0 h-screen z-40 bg-slate-500/5 border-r border-slate-300/5 flex flex-col md:translate-x-0 -translate-x-full transition-transform duration-200">
+            <!-- Brand -->
+            <div class="px-4 h-14 flex items-center gap-2.5 border-b border-slate-300/5">
+                <span class="text-sm font-semibold tracking-tight text-white">JAYAPONA</span>
+            </div>
+
+            <!-- User info -->
+            <div class="px-3 pt-4 pb-2">
+                <div class="flex items-center gap-2.5 px-2 py-2.5 rounded-xl bg-[#11111e] border border-slate-300/5">
+                    <div id="avatar" class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold text-white flex-shrink-0 bg-gradient-to-br from-purple-500 to-blue-500">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div id="user-name" class="text-xs font-medium text-gray-200 truncate"></div>
+                        <div id="user-role-label" class="text-[10px] text-gray-500 capitalize"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nav -->
+            <nav id="sidebar-nav" class="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto"></nav>
+
+            <!-- Bottom -->
+            <div class="px-3 pb-4 pt-2 border-t border-slate-300/5 space-y-1">
+                <button onclick="toggleTheme()" class="nav-link w-full gap-2">
+                    <svg class="w-3.5 h-3.5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+                    <svg class="w-3.5 h-3.5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <span id="theme-label">Light Mode</span>
+                </button>
+                <button onclick="doLogout()" class="nav-link w-full gap-2 text-gray-500 hover:text-red-400 hover:bg-red-950/20 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Keluar
+                </button>
+            </div>
+        </aside>
+
+        <!-- ─── MAIN ─────────────────────── -->
+        <main class="md:ml-[240px] min-h-screen flex flex-col">
+
+            <!-- Header -->
+            <header class="sticky top-0 md:top-0 top-12 z-20 bg-[#0a0a12]/90 backdrop-blur-md border-b border-slate-300/5 px-5 h-14 flex items-center justify-between">
+                <div class="flex items-center gap-2 min-w-0">
+                    <h1 id="page-title" class="text-sm font-semibold text-gray-200 truncate"></h1>
+                    <span class="text-gray-600 hidden sm:block">/</span>
+                    <p id="page-sub" class="text-xs text-gray-500 hidden sm:block truncate"></p>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div id="view-container" class="flex-1 p-5 md:p-6 pt-4 mt-14 md:mt-0"></div>
+        </main>
+    </div>
+
+    <!-- ═══════════ API CLIENT ═══════════ -->
+    <script src="api.js">
+    </script>
+    <script src="avatar.js">
+      
+    </script>
+
+    <!-- ═══════════ APP LOGIC ═══════════ -->
+    <script>
+        'use strict';
+
+        // ────────────────────────────────────────────────
+        // THEME
+        // ────────────────────────────────────────────────
+        function initTheme() {
+            const saved = localStorage.getItem('jyp_theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = saved ? saved === 'dark' : prefersDark;
+            document.documentElement.classList.toggle('dark', isDark);
+            updateThemeLabel(isDark);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('jyp_theme', isDark ? 'dark' : 'light');
+            updateThemeLabel(isDark);
+        }
+
+        function updateThemeLabel(isDark) {
+            const el = document.getElementById('theme-label');
+            if (el) el.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+        }
+        initTheme();
+
+        // ────────────────────────────────────────────────
+        // MOBILE SIDEBAR
+        // ────────────────────────────────────────────────
+        function openMobileSidebar() {
+            document.getElementById('app-sidebar').classList.remove('-translate-x-full');
+            document.getElementById('sidebar-overlay').classList.remove('hidden');
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('app-sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebar-overlay').classList.add('hidden');
+        }
+
+        // ────────────────────────────────────────────────
+        // STATE
+        // ────────────────────────────────────────────────
+        const STATE = { user: null, currentPage: '' };
+        const rp = n => 'Rp\u202f' + Number(n || 0).toLocaleString('id-ID');
+
+        // ────────────────────────────────────────────────
+        // BADGE HELPERS
+        // ────────────────────────────────────────────────
+        function badge(status) {
+            const map = { Tersedia: 'badge-tersedia', Sold: 'badge-sold', Booking: 'badge-booking', Service: 'badge-service' };
+            return `<span class="badge ${map[status]||'badge-service'}">${status}</span>`;
+        }
+
+        function badgeService(status) {
+            const map = { Masuk: 'badge-masuk', Diagnosa: 'badge-diagnosa', Proses: 'badge-proses', Selesai: 'badge-selesai',
+                Diambil: 'badge-diambil' };
+            return `<span class="badge ${map[status]||'badge-masuk'}">${status}</span>`;
+        }
+
+        function batteryBar(pct) {
+            const c = pct >= 80 ? 'bg-green-500' : pct >= 60 ? 'bg-yellow-400' : 'bg-red-500';
+            return `<div class="flex items-center gap-2">
+                <div class="battery-track"><div class="progress-fill ${c}" style="width:${pct}%"></div></div>
+                <span class="text-[11px] text-gray-400  ">${pct}%</span>
+              </div>`;
+        }
+        // avatar
+        
+        const ava = document.getElementById("avatar").innerHTML = ``
+        
+        // ────────────────────────────────────────────────
+        // TOAST
+        // ────────────────────────────────────────────────
+        function showToast(msg, type = 'success') {
+            const styles = {
+                success: 'bg-[#111118] border-green-900/40 text-green-400',
+                error: 'bg-[#111118] border-red-900/40 text-red-400',
+                info: 'bg-[#111118] border-blue-900/40 text-blue-400',
+            };
+            const icons = {
+                success: `<svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`,
+                error: `<svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`,
+                info: `<svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+            };
+            const el = document.createElement('div');
+            el.className =
+                `toast pointer-events-auto flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-xs font-medium shadow-lg max-w-xs ${styles[type]||styles.success}`;
+            el.innerHTML =
+            `${icons[type]||icons.info}<span>${msg}</span>`;
+            document.getElementById('toast-container').appendChild(el);
+            setTimeout(() => { el.style.opacity = '0';
+                el.style.transition = 'opacity 0.2s';
+                setTimeout(() => el.remove(), 200); }, 3200);
+        }
+
+        // ────────────────────────────────────────────────
+        // MODAL
+        // ────────────────────────────────────────────────
+        function openModal(html) {
+            document.getElementById('modal-body').innerHTML = html;
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal(e) {
+            if (!e || e.target === document.getElementById('modal'))
+                document.getElementById('modal').classList.add('hidden');
+        }
+
+        function closeModalBtn() { document.getElementById('modal').classList.add('hidden'); }
+
+        function modalHeader(title, sub = '') {
+            return `<div class="flex items-start justify-between mb-5">
+                <div>
+                  <h3 class="text-sm font-semibold text-gray-200">${title}</h3>
+                  ${sub?`<p class="text-xs text-gray-500 mt-0.5  ">${sub}</p>`:''}
+                </div>
+                <button onclick="closeModalBtn()" class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-300 hover:bg-[#1a1a26] transition-colors -mr-1 -mt-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>`;
+        }
+
+        // ────────────────────────────────────────────────
+        // LOADING STATES
+        // ────────────────────────────────────────────────
+        function setLoading(c, rows = 4) {
+            c.innerHTML =
+            `<div class="space-y-2">${Array(rows).fill('<div class="skeleton h-9 w-full rounded-lg"></div>').join('')}</div>`;
+        }
+
+        function emptyState(msg, icon = '📭') {
+            return `<div class="flex flex-col items-center justify-center py-16 text-center">
+                <div class="text-3xl mb-3">${icon}</div>
+                <p class="text-sm text-gray-500">${msg}</p>
+              </div>`;
+        }
+
+        function errorState(msg, fn = '') {
+            return `<div class="flex flex-col items-center justify-center py-16 text-center">
+                <div class="w-10 h-10 rounded-xl bg-red-950/20 flex items-center justify-center mb-3">
+                  <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+                <p class="text-sm font-medium text-gray-300 mb-1">Gagal memuat data</p>
+                <p class="text-xs text-gray-500 mb-4 max-w-[200px]">${msg}</p>
+                ${fn?`<button onclick="${fn}" class="btn btn-ghost text-xs">Coba lagi</button>`:''}
+              </div>`;
+        }
+
+        // ────────────────────────────────────────────────
+        // SHARED UI COMPONENTS
+        // ────────────────────────────────────────────────
+        function statCard(label, value, sub, accent) {
+            const colors = {
+                blue: 'text-blue-400',
+                green: 'text-green-400',
+                orange: 'text-orange-400',
+                purple: 'text-purple-400',
+                red: 'text-red-400',
+                mono: 'text-gray-200',
+            };
+            return `<div class="bg-slate-500/5 p-3 rounded-xl">
+                <p class="text-xs font-medium text-gray-300 mb-1">${label}</p>
+                <p class="text-2xl font-semibold ${colors[accent]||colors.mono} mb-1 leading-none">${value}</p>
+                <p class="text-xs text-gray-500">${sub}</p>
+              </div>`;
+        }
+
+        function finRow(label, val, cls) {
+            return `<div class="flex items-center justify-between py-2.5">
+                <span class="text-xs text-gray-500">${label}</span>
+                <span class="text-xs font-semibold ${cls}">${val}</span>
+              </div>`;
+        }
+
+        function statusBar(label, n, total, color) {
+            const pct = total ? Math.round(n / total * 100) : 0;
+            const colors = { green: 'bg-green-500', red: 'bg-red-500', yellow: 'bg-yellow-400', blue: 'bg-blue-500' };
+            return `<div>
+                <div class="flex justify-between items-center mb-1.5">
+                  <span class="text-xs text-gray-500">${label}</span>
+                  <span class="text-xs text-gray-400">${n}</span>
+                </div>
+                <div class="progress-track"><div class="progress-fill ${colors[color]||'bg-gray-400'}" style="width:${pct}%"></div></div>
+              </div>`;
+        }
+
+        // ────────────────────────────────────────────────
+        // AUTH
+        // ────────────────────────────────────────────────
+        async function doLogin() {
+            const u = document.getElementById('login-user').value.trim();
+            const p = document.getElementById('login-pass').value.trim();
+            const err = document.getElementById('login-error');
+            const btn = document.getElementById('login-btn');
+            if (!u || !p) { err.textContent = 'Username dan password wajib diisi.';
+                err.classList.remove('hidden'); return; }
+            btn.innerHTML = `<span class="spinner"></span> Memproses...`;
+            btn.disabled = true;
+            err.classList.add('hidden');
+            try {
+                const res = await API.auth.login(u, p);
+                Token.set(res.access_token);
+                STATE.user = res.user;
+                showApp();
+            } catch (e) {
+                err.textContent = e.message || 'Login gagal.';
+                err.classList.remove('hidden');
+            } finally { btn.innerHTML = 'Masuk';
+                btn.disabled = false; }
+        }
+
+        function doLogout() {
+            Token.clear();
+            STATE.user = null;
+            document.getElementById('page-app').classList.add('hidden');
+            document.getElementById('page-login').classList.remove('hidden');
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-pass').value = '';
+            closeMobileSidebar();
+        }
+
+        // ────────────────────────────────────────────────
+        // NAV CONFIG
+        // ────────────────────────────────────────────────
+        const NAV = {
+            owner: [
+                { page: 'dashboard', label: 'Dashboard', d: 'M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z' },
+                { page: 'stok', label: 'Manajemen Stok', d: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+                { page: 'transaksi', label: 'Transaksi', d: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+                { page: 'laporan', label: 'Laporan', d: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+                { page: 'service', label: 'Data Service', d: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z' },
+                { page: 'karyawan', label: 'Karyawan', d: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+                { page: 'log', label: 'Log Aktivitas', d: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+            ],
+            kasir: [
+                { page: 'stok-kasir', label: 'Cek Stok', d: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+                { page: 'input-transaksi', label: 'Input Transaksi', d: 'M12 4v16m8-8H4' },
+                { page: 'tambah-unit', label: 'Tambah Unit', d: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+                { page: 'customers', label: 'Data Customer', d: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z' },
+            ],
+            teknisi: [
+                { page: 'service-list', label: 'Data Service', d: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z' },
+                { page: 'input-service', label: 'Input Service', d: 'M12 4v16m8-8H4' },
+            ],
+        };
+
+        const PAGE_META = {
+            'dashboard': ['Dashboard', 'Ringkasan bisnis real-time'],
+            'stok': ['Manajemen Stok', 'Kelola unit HP & inventaris'],
+            'transaksi': ['Transaksi', 'Riwayat semua penjualan'],
+            'laporan': ['Laporan Keuangan', 'Profit & revenue'],
+            'service': ['Data Service', 'Semua tiket service'],
+            'karyawan': ['Karyawan', 'Manajemen SDM'],
+            'log': ['Log Aktivitas', 'Audit trail sistem'],
+            'stok-kasir': ['Cek Stok', 'Unit tersedia'],
+            'input-transaksi': ['Input Transaksi', 'Catat penjualan baru'],
+            'tambah-unit': ['Tambah Unit', 'Input barang masuk'],
+            'customers': ['Data Customer', 'Daftar pelanggan'],
+            'service-list': ['Data Service', 'Tiket service kamu'],
+            'input-service': ['Input Service', 'Catat service baru'],
+        };
+
+        // ────────────────────────────────────────────────
+        // SHOW APP
+        // ────────────────────────────────────────────────
+        function showApp() {
+            document.getElementById('page-login').classList.add('hidden');
+            document.getElementById('page-app').classList.remove('hidden');
+
+            const { user } = STATE;
+            const roleColors = { owner: '#ef4444', kasir: '#3b82f6', teknisi: '#10b981' };
+
+            document.getElementById('user-name').textContent = user.name;
+            document.getElementById('user-role-label').textContent = user.role;
+
+            const items = NAV[user.role] || [];
+            document.getElementById('sidebar-nav').innerHTML = items.map(n =>
+                `<button class="nav-link" onclick="navigate('${n.page}'); closeMobileSidebar();">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="${n.d}"/>
+                  </svg>
+                  ${n.label}
+                </button>`
+            ).join('');
+            
+            const ava = document.getElementById("avatar");
+            if (user.role == "owner") {
+              ava.innerHTML = `${ownerAva}`
+            } else if (user.role == "kasir") {
+              ava.innerHTML = `${karyawanAva}`
+            } else {
+              ava.innerHTML = `${teknisiAva}`
+            }
+    
+            
+            const first = { owner: 'dashboard', kasir: 'stok-kasir', teknisi: 'service-list' };
+            navigate(first[user.role] || 'dashboard');
+        }
+
+        // ────────────────────────────────────────────────
+        // ROUTER
+        // ────────────────────────────────────────────────
+        const VIEWS = {
+            'dashboard': renderDashboard,
+            'stok': renderStok,
+            'transaksi': renderTransaksi,
+            'laporan': renderLaporan,
+            'service': renderServiceOwner,
+            'karyawan': renderKaryawan,
+            'log': renderLog,
+            'stok-kasir': renderStokKasir,
+            'input-transaksi': renderInputTransaksi,
+            'tambah-unit': renderTambahUnit,
+            'customers': renderCustomers,
+            'service-list': renderServiceTeknisi,
+            'input-service': renderInputService,
+        };
+
+        function navigate(page) {
+            STATE.currentPage = page;
+            document.querySelectorAll('.nav-link').forEach(el => {
+                el.classList.toggle('active', el.getAttribute('onclick')?.includes(`navigate('${page}')`));
+            });
+            const [title, sub] = PAGE_META[page] || ['', ''];
+            document.getElementById('page-title').textContent = title;
+            document.getElementById('page-sub').textContent = sub;
+            const c = document.getElementById('view-container');
+            c.className = 'flex-1 p-5 md:p-6 pt-4 mt-14 md:mt-0 animate-fade-up';
+            c.innerHTML = '';
+            VIEWS[page]?.();
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: DASHBOARD
+        // ════════════════════════════════════════════════
+        async function renderDashboard() {
+            const c = document.getElementById('view-container');
+            setLoading(c, 6);
+            try {
+                const res = await API.dashboard.stats();
+                const { unit, keuangan: keu, recent_transaksi: trx } = res.data;
+
+                c.innerHTML = `<div class="space-y-5">
+
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                      ${statCard('Total Unit',    unit.total,           'unit',             'blue')}
+                      ${statCard('Stok Tersedia', unit.tersedia,        'unit siap jual',   'green')}
+                      ${statCard('Total Terjual', unit.sold,            'unit sold',        'orange')}
+                      ${statCard('Gross Profit',  rp(keu.total_profit), 'keuntungan bersih','purple')}
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+
+                      <div class="lg:col-span-2 bg-slate-500/5 rounded-xl p-5">
+                        <p class="text-xs font-medium text-gray-400 mb-4">Ringkasan Keuangan</p>
+                        <div>
+                          ${finRow('Profit Hari Ini',    rp(keu.profit_harian),  'text-green-400')}
+                          ${finRow('Total Revenue',      rp(keu.total_revenue),  'text-blue-400')}
+                          ${finRow('Total Modal',        rp(keu.total_modal),    'text-gray-500')}
+                          ${finRow('Gross Profit',       rp(keu.total_profit),   'text-gray-200')}
+                        </div>
+                      </div>
+
+                      <div class="bg-slate-500/5 rounded-xl p-5">
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-widest mb-4">Status Unit</p>
+                        <div class="space-y-3">
+                          ${statusBar('Tersedia', unit.tersedia, unit.total, 'green')}
+                          ${statusBar('Sold',     unit.sold,     unit.total, 'red')}
+                          ${statusBar('Booking',  unit.booking,  unit.total, 'yellow')}
+                          ${statusBar('Service',  unit.service,  unit.total, 'blue')}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bg-slate-500/5 rounded-xl">
+                      <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-300/5">
+                        <p class="text-xs font-medium text-gray-300">Transaksi Terbaru</p>
+                        <button onclick="navigate('transaksi')" class="text-xs text-gray-500 hover:text-gray-300 transition-colors">Lihat semua</button>
+                      </div>
+                      <div class="overflow-x-auto">
+                        <table class="w-full text-xs">
+                          <thead>
+                            <tr class="text-left text-[10px] uppercase tracking-widest text-gray-500 border-b border-slate-300/5">
+                              <th class="px-5 py-3 font-medium">ID</th>
+                              <th class="px-5 py-3 font-medium">Unit</th>
+                              <th class="px-5 py-3 font-medium hidden sm:table-cell">Kasir</th>
+                              <th class="px-5 py-3 font-medium">Harga Jual</th>
+                              <th class="px-5 py-3 font-medium">Profit</th>
+                              <th class="px-5 py-3 font-medium hidden md:table-cell">Waktu</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            ${trx.length ? trx.map(t=>`<tr class="tbl-row">
+                              <td class="px-5 py-3 text-gray-500">${t.trx_id}</td>
+                              <td class="px-5 py-3 font-medium text-gray-200 max-w-[160px] truncate">${t.unit_label}</td>
+                              <td class="px-5 py-3 text-gray-500 hidden sm:table-cell">${t.kasir}</td>
+                              <td class="px-5 py-3 text-gray-300">${rp(t.harga_jual)}</td>
+                              <td class="px-5 py-3   font-semibold text-green-400">${rp(t.profit)}</td>
+                              <td class="px-5 py-3 text-gray-500   hidden md:table-cell">${t.waktu}</td>
+                            </tr>`).join('') : `<tr><td colspan="6">${emptyState('Belum ada transaksi')}</td></tr>`}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>`;
+            } catch (e) { c.innerHTML = errorState(e.message, 'renderDashboard()'); }
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: STOK (OWNER)
+        // ════════════════════════════════════════════════
+        let _stokFilter = 'Semua';
+
+        async function renderStok() {
+            const c = document.getElementById('view-container');
+            const statuses = ['Semua', 'Tersedia', 'Sold', 'Booking', 'Service'];
+            c.innerHTML = `<div class="space-y-4">
+                <div class="flex flex-wrap gap-2 items-center justify-between">
+                  <div class="flex gap-1 flex-wrap" id="stok-filter-btns">
+                    ${statuses.map((s,i)=>`<button onclick="filterStok('${s}')" class="filter-tab ${i===0?'active':''}">${s}</button>`).join('')}
+                  </div>
+                  <button onclick="modalTambahUnitForm()" class="btn btn-primary">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Tambah Unit
+                  </button>
+                </div>
+                <div id="stok-table-wrap">${Array(4).fill('<div class="skeleton h-10 w-full rounded-lg mb-2"></div>').join('')}</div>
+              </div>`;
+            await loadStokTable('Semua');
+        }
+
+        async function filterStok(status) {
+            _stokFilter = status;
+            document.querySelectorAll('.filter-tab').forEach(b => {
+                b.classList.toggle('active', b.textContent.trim() === status);
+            });
+            await loadStokTable(status);
+        }
+
+        async function loadStokTable(filter) {
+            const wrap = document.getElementById('stok-table-wrap');
+            if (!wrap) return;
+            wrap.innerHTML = Array(4).fill(
+                '<div class="skeleton h-10 w-full rounded-lg mb-2"></div>').join('');
+            try {
+                const params = filter !== 'Semua' ? { status: filter } : {};
+                const units = (await API.units.list(params)).data;
+                wrap.innerHTML = `<div class="bg-slate-500/5 rounded-xl">
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                      <thead>
+                        <tr class="text-left text-[10px] uppercase tracking-widest text-gray-500 border-b border-slate-300/5">
+                          <th class="px-4 py-3 font-medium">ID Produk</th>
+                          <th class="px-4 py-3 font-medium">Perangkat</th>
+                          <th class="px-4 py-3 font-medium hidden lg:table-cell">Storage</th>
+                          <th class="px-4 py-3 font-medium hidden xl:table-cell">IMEI</th>
+                          <th class="px-4 py-3 font-medium hidden md:table-cell">Modal</th>
+                          <th class="px-4 py-3 font-medium">Jual</th>
+                          <th class="px-4 py-3 font-medium hidden sm:table-cell">Battery</th>
+                          <th class="px-4 py-3 font-medium">Status</th>
+                          <th class="px-4 py-3 font-medium"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${units.length ? units.map(u=>`<tr class="tbl-row">
+                          <td class="px-4 py-3 text-gray-500">${u.unit_id}</td>
+                          <td class="px-4 py-3">
+                            <div class="font-medium text-gray-200">${u.merk} ${u.tipe}</div>
+                            <div class="text-[10px] text-gray-500 mt-0.5">${u.kondisi} · ${u.warna}</div>
+                          </td>
+                          <td class="px-4 py-3 text-gray-500 hidden lg:table-cell">${u.storage}</td>
+                          <td class="px-4 py-3 text-gray-500   hidden xl:table-cell">${u.imei}</td>
+                          <td class="px-4 py-3  text-gray-500 hidden md:table-cell">${rp(u.harga_modal)}</td>
+                          <td class="px-4 py-3  font-semibold text-green-400">${rp(u.harga_jual)}</td>
+                          <td class="px-4 py-3 hidden sm:table-cell">${batteryBar(u.battery)}</td>
+                          <td class="px-4 py-3">${badge(u.status)}</td>
+                          <td class="px-4 py-3">
+                            <button onclick="modalEditUnit('${u.unit_id}')" class="text-[11px] text-gray-500 hover:text-gray-300 transition-colors">Edit</button>
+                          </td>
+                        </tr>`).join('') : `<tr><td colspan="9">${emptyState('Tidak ada unit untuk filter ini')}</td></tr>`}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="px-4 py-3 border-t border-slate-300/5">
+                    <span class="text-[11px] text-gray-500">${units.length} unit ditampilkan</span>
+                  </div>
+                </div>`;
+            } catch (e) { wrap.innerHTML = errorState(e.message, `filterStok('${filter}')`); }
+        }
+
+        function _unitFormFields() {
+            const fld = (id, label, type = 'text', placeholder = '', extra = '') =>
+                `<div><label class="label">${label}</label><input id="${id}" type="${type}" class="field" placeholder="${placeholder}" ${extra}/></div>`;
+            return `
+              <div class="grid grid-cols-2 gap-3">
+                <div><label class="label">Kategori</label>
+                  <select id="u-kat" class="field">
+                    <option value="IP">iPhone</option><option value="AI">Android</option>
+                    <option value="TB">Tablet</option><option value="AC">Accessories</option><option value="SP">Sparepart</option>
+                  </select></div>
+                <div><label class="label">Kondisi</label>
+                  <select id="u-kondisi-kode" class="field">
+                    <option value="BN">Normal</option><option value="MN">Minus</option>
+                    <option value="EX">Ex Inter</option><option value="RJ">Reject</option>
+                  </select></div>
+                ${fld('u-merk','Merk','text','Apple / Samsung...')}
+                ${fld('u-tipe','Tipe','text','iPhone 15 Pro...')}
+                ${fld('u-storage','Storage','text','128GB')}
+                ${fld('u-warna','Warna','text','Black Titanium')}
+                ${fld('u-imei','IMEI','text','15 digit IMEI')}
+                ${fld('u-battery','Battery %','number','100','min="0" max="100"')}
+                ${fld('u-modal','Harga Modal','number','0','min="0"')}
+                ${fld('u-jual','Harga Jual','number','0','min="0"')}
+              </div>
+              <div class="mt-3"><label class="label">Catatan</label>
+                <textarea id="u-catatan" rows="2" class="field resize-none" placeholder="Opsional..."></textarea></div>`;
+        }
+
+        function modalTambahUnitForm() {
+            openModal(`${modalHeader('Tambah Unit HP')}
+                ${_unitFormFields()}
+                <button id="btn-simpan-unit" onclick="simpanUnit(false)" class="btn btn-primary w-full mt-4">Simpan Unit</button>`);
+        }
+
+        async function simpanUnit(isKasirPage = false) {
+            const btn = document.getElementById('btn-simpan-unit');
+            btn.innerHTML = `<span class="spinner"></span> Menyimpan...`;
+            btn.disabled = true;
+            try {
+                await API.units.create({
+                    kat_kode: document.getElementById('u-kat').value,
+                    kondisi_kode: document.getElementById('u-kondisi-kode').value,
+                    merk: document.getElementById('u-merk').value,
+                    tipe: document.getElementById('u-tipe').value,
+                    storage: document.getElementById('u-storage').value || '-',
+                    warna: document.getElementById('u-warna').value || '-',
+                    imei: document.getElementById('u-imei').value || '-',
+                    harga_modal: parseInt(document.getElementById('u-modal').value) || 0,
+                    harga_jual: parseInt(document.getElementById('u-jual').value) || 0,
+                    battery: parseInt(document.getElementById('u-battery').value) || 100,
+                    catatan: document.getElementById('u-catatan').value,
+                });
+                closeModalBtn();
+                showToast('Unit berhasil ditambahkan');
+                if (isKasirPage) renderTambahUnit();
+                else await loadStokTable(_stokFilter);
+            } catch (e) { showToast(e.message, 'error');
+                btn.innerHTML = 'Simpan Unit';
+                btn.disabled = false; }
+        }
+
+        async function modalEditUnit(unit_id) {
+            openModal(`${modalHeader('Edit Unit', unit_id)}
+                <div class="grid grid-cols-2 gap-3">
+                  <div><label class="label">Harga Modal</label><input id="e-modal" type="number" class="field" placeholder="0"/></div>
+                  <div><label class="label">Harga Jual</label><input id="e-jual" type="number" class="field" placeholder="0"/></div>
+                  <div><label class="label">Battery %</label><input id="e-battery" type="number" class="field" placeholder="100"/></div>
+                  <div><label class="label">Status</label>
+                    <select id="e-status" class="field">
+                      <option>Tersedia</option><option>Sold</option><option>Booking</option><option>Service</option>
+                    </select></div>
+                </div>
+                <div class="mt-3"><label class="label">Catatan</label><textarea id="e-catatan" rows="2" class="field resize-none"></textarea></div>
+                <button id="btn-update-unit" onclick="updateUnit('${unit_id}')" class="btn btn-primary w-full mt-4">Update Unit</button>`);
+        }
+
+        async function updateUnit(unit_id) {
+            const btn = document.getElementById('btn-update-unit');
+            btn.innerHTML = `<span class="spinner"></span> Menyimpan...`;
+            btn.disabled = true;
+            try {
+                const b = {};
+                const m = document.getElementById('e-modal').value;
+                const j = document.getElementById('e-jual').value;
+                const bat = document.getElementById('e-battery').value;
+                if (m) b.harga_modal = parseInt(m);
+                if (j) b.harga_jual = parseInt(j);
+                if (bat) b.battery = parseInt(bat);
+                b.status = document.getElementById('e-status').value;
+                b.catatan = document.getElementById('e-catatan').value;
+                await API.units.update(unit_id, b);
+                closeModalBtn();
+                showToast('Unit berhasil diupdate');
+                await loadStokTable(_stokFilter);
+            } catch (e) { showToast(e.message, 'error');
+                btn.innerHTML = 'Update Unit';
+                btn.disabled = false; }
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: TRANSAKSI
+        // ════════════════════════════════════════════════
+        async function renderTransaksi() {
+            const c = document.getElementById('view-container');
+            setLoading(c, 5);
+            try {
+                const list = (await API.transaksi.list()).data;
+                const totalProfit = list.reduce((s, t) => s + (t.profit || 0), 0);
+                c.innerHTML = `<div class="bg-slate-500/5 rounded-xl">
+                  <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-300/5">
+                    <p class="text-xs font-medium text-gray-300">Semua Transaksi</p>
+                    <span class="text-[11px] text-gray-500">${list.length} transaksi</span>
+                  </div>
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                      <thead>
+                        <tr class="text-left text-[10px] uppercase tracking-widest text-gray-500 border-b border-slate-300/5">
+                          <th class="px-5 py-3 font-medium">ID Trx</th>
+                          <th class="px-5 py-3 font-medium">Unit</th>
+                          <th class="px-5 py-3 font-medium hidden sm:table-cell">Kasir</th>
+                          <th class="px-5 py-3 font-medium">Harga Jual</th>
+                          <th class="px-5 py-3 font-medium hidden md:table-cell">Modal</th>
+                          <th class="px-5 py-3 font-medium">Profit</th>
+                          <th class="px-5 py-3 font-medium hidden lg:table-cell">Waktu</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${list.length ? list.map(t=>`<tr class="tbl-row">
+                          <td class="px-5 py-3  text-gray-500">${t.trx_id}</td>
+                          <td class="px-5 py-3">
+                            <div class="font-medium text-gray-200">${t.unit_label}</div>
+                            <div class="text-[10px] text-gray-500  ">${t.unit_id}</div>
+                          </td>
+                          <td class="px-5 py-3 text-gray-500 hidden sm:table-cell">${t.kasir}</td>
+                          <td class="px-5 py-3   text-gray-300">${rp(t.harga_jual)}</td>
+                          <td class="px-5 py-3   text-gray-500 hidden md:table-cell">${rp(t.harga_modal)}</td>
+                          <td class="px-5 py-3   font-semibold text-green-400">${rp(t.profit)}</td>
+                          <td class="px-5 py-3   text-gray-500 hidden lg:table-cell">${t.waktu}</td>
+                        </tr>`).join('') : `<tr><td colspan="7">${emptyState('Belum ada transaksi')}</td></tr>`}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="px-5 py-3 border-t border-slate-300/5 flex justify-between items-center">
+                    <span class="text-[11px] text-gray-500">Total Profit</span>
+                    <span class="text-xs font-semibold   text-green-400">${rp(totalProfit)}</span>
+                  </div>
+                </div>`;
+            } catch (e) { c.innerHTML = errorState(e.message, 'renderTransaksi()'); }
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: LAPORAN
+        // ════════════════════════════════════════════════
+        async function renderLaporan() {
+            const c = document.getElementById('view-container');
+            setLoading(c, 4);
+            try {
+                const [sRes, tRes] = await Promise.all([API.dashboard.stats(), API.transaksi.list()]);
+                const keu = sRes.data.keuangan;
+                const list = tRes.data;
+                c.innerHTML = `<div class="space-y-4">
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    ${statCard('Total Revenue', rp(keu.total_revenue), 'bulan ini',         'blue')}
+                    ${statCard('Total Modal',   rp(keu.total_modal),   'harga beli',        'mono')}
+                    ${statCard('Gross Profit',  rp(keu.total_profit),  'keuntungan bersih', 'green')}
+                  </div>
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="bg-slate-500/5 rounded-xl p-5">
+                      <p class="text-xs font-medium text-gray-400 uppercase tracking-widest mb-4">Breakdown Keuangan</p>
+                      ${finRow('Total Penjualan (Revenue)', rp(keu.total_revenue), 'text-blue-400')}
+                      ${finRow('Total Harga Modal',         rp(keu.total_modal),   'text-gray-500')}
+                      ${finRow('Gross Profit',              rp(keu.total_profit),  'text-green-400')}
+                    </div>
+                    <div class="bg-slate-500/5 rounded-xl p-5">
+                      <p class="text-xs font-medium text-gray-400 uppercase tracking-widest mb-4">Profit per Transaksi</p>
+                      <div class="space-y-0 max-h-64 overflow-y-auto">
+                        ${list.length ? list.map(t=>`<div class="flex justify-between items-center py-2.5 border-b border-slate-300/5 last:border-0">
+                          <div>
+                            <div class="text-xs font-medium text-gray-300">${t.unit_label}</div>
+                            <div class="text-[10px] text-gray-500  ">${t.waktu}</div>
+                          </div>
+                          <span class="text-xs font-semibold   text-green-400">${rp(t.profit)}</span>
+                        </div>`).join('') : emptyState('Belum ada transaksi')}
+                      </div>
+                    </div>
+                  </div>
+                </div>`;
+            } catch (e) { c.innerHTML = errorState(e.message, 'renderLaporan()'); }
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: SERVICE (OWNER)
+        // ════════════════════════════════════════════════
+        async function renderServiceOwner() {
+            const c = document.getElementById('view-container');
+            setLoading(c, 4);
+            try {
+                const list = (await API.service.list()).data;
+                c.innerHTML = `<div class="bg-slate-500/5 rounded-xl">
+                  <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-300/5">
+                    <p class="text-xs font-medium text-gray-300">Semua Data Service</p>
+                    <span class="text-[11px] text-gray-500">${list.length} tiket</span>
+                  </div>
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                      <thead>
+                        <tr class="text-left text-[10px] uppercase tracking-widest text-gray-500 border-b border-slate-300/5">
+                          <th class="px-5 py-3 font-medium">ID</th>
+                          <th class="px-5 py-3 font-medium">Customer</th>
+                          <th class="px-5 py-3 font-medium">Perangkat</th>
+                          <th class="px-5 py-3 font-medium hidden md:table-cell">Keluhan</th>
+                          <th class="px-5 py-3 font-medium hidden sm:table-cell">Teknisi</th>
+                          <th class="px-5 py-3 font-medium">Estimasi</th>
+                          <th class="px-5 py-3 font-medium">Status</th>
+                          <th class="px-5 py-3 font-medium hidden lg:table-cell">Tgl Masuk</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${list.length ? list.map(s=>`<tr class="tbl-row">
+                          <td class="px-5 py-3   text-gray-500">${s.service_id}</td>
+                          <td class="px-5 py-3">
+                            <div class="font-medium text-gray-200">${s.nama_customer}</div>
+                            <div class="text-[10px] text-gray-500">${s.kontak_customer}</div>
+                          </td>
+                          <td class="px-5 py-3 font-medium text-gray-300">${s.merk} ${s.tipe}</td>
+                          <td class="px-5 py-3 text-gray-500 max-w-[140px] truncate hidden md:table-cell">${s.keluhan}</td>
+                          <td class="px-5 py-3 text-gray-500 hidden sm:table-cell">${s.teknisi||'—'}</td>
+                          <td class="px-5 py-3   text-gray-300">${rp(s.estimasi_biaya)}</td>
+                          <td class="px-5 py-3">${badgeService(s.status)}</td>
+                          <td class="px-5 py-3   text-gray-500 hidden lg:table-cell">${s.created_at}</td>
+                        </tr>`).join('') : `<tr><td colspan="8">${emptyState('Belum ada data service','🔧')}</td></tr>`}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>`;
+            } catch (e) { c.innerHTML = errorState(e.message, 'renderServiceOwner()'); }
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: KARYAWAN
+        // ════════════════════════════════════════════════
+        async function renderKaryawan() {
+            const c = document.getElementById('view-container');
+            setLoading(c, 3);
+            try {
+                const list = (await API.karyawan.list()).data;
+                const roleColors = { Kasir: 'bg-blue-950/30 text-blue-400', Teknisi: 'bg-green-950/30 text-green-400',
+                    Admin: 'bg-purple-950/30 text-purple-400' };
+                c.innerHTML = `<div class="space-y-4">
+                  <div class="flex justify-end">
+                    <button onclick="modalTambahKaryawan()" class="btn btn-primary">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                      Tambah Karyawan
+                    </button>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    ${list.length ? list.map(k=>`<div class="bg-slate-500/5 rounded-xl p-5">
+                      <div class="flex items-start gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-[#1a1a26] flex items-center justify-center text-sm font-semibold text-gray-400 flex-shrink-0">${k.nama[0]}</div>
+                        <div class="flex-1 min-w-0">
+                          <div class="text-sm font-medium text-gray-200 truncate">${k.nama}</div>
+                          <span class="inline-block mt-0.5 px-2 py-0.5 rounded-md text-[10px] font-medium ${roleColors[k.jabatan]||'bg-[#1a1a26] text-gray-500'}">${k.jabatan}</span>
+                        </div>
+                        <span class="badge ${k.aktif?'badge-tersedia':'badge-sold'}">${k.aktif?'Aktif':'Nonaktif'}</span>
+                      </div>
+                      <hr class="divider mb-3"/>
+                      <div class="space-y-2 text-xs">
+                        <div class="flex justify-between"><span class="text-gray-500">Bergabung</span><span class="text-gray-400  ">${k.bergabung}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Gaji Pokok</span><span class="font-semibold   text-green-400">${rp(k.gaji)}</span></div>
+                      </div>
+                    </div>`).join('') : `<div class="col-span-3">${emptyState('Belum ada karyawan','👤')}</div>`}
+                  </div>
+                </div>`;
+            } catch (e) { c.innerHTML = errorState(e.message, 'renderKaryawan()'); }
+        }
+
+        function modalTambahKaryawan() {
+            openModal(`${modalHeader('Tambah Karyawan')}
+                <div class="space-y-3">
+                  <div><label class="label">Nama Lengkap</label><input id="k-nama" type="text" class="field"/></div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><label class="label">Username</label><input id="k-user" type="text" class="field"/></div>
+                    <div><label class="label">Jabatan</label>
+                      <select id="k-jabatan" class="field">
+                        <option value="Kasir">Kasir</option><option value="Teknisi">Teknisi</option><option value="Admin">Admin</option>
+                      </select></div>
+                  </div>
+                  <div><label class="label">Gaji Pokok</label><input id="k-gaji" type="number" min="0" class="field" placeholder="3500000"/></div>
+                </div>
+                <button id="btn-simpan-karyawan" onclick="simpanKaryawan()" class="btn btn-primary w-full mt-4">Simpan Karyawan</button>`);
+        }
+
+        async function simpanKaryawan() {
+            const btn = document.getElementById('btn-simpan-karyawan');
+            btn.innerHTML = `<span class="spinner"></span> Menyimpan...`;
+            btn.disabled = true;
+            try {
+                await API.karyawan.create({
+                    nama: document.getElementById('k-nama').value,
+                    username: document.getElementById('k-user').value,
+                    jabatan: document.getElementById('k-jabatan').value,
+                    gaji: parseInt(document.getElementById('k-gaji').value) || 0,
+                });
+                closeModalBtn();
+                showToast('Karyawan berhasil ditambahkan');
+                await renderKaryawan();
+            } catch (e) { showToast(e.message, 'error');
+                btn.innerHTML = 'Simpan Karyawan';
+                btn.disabled = false; }
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: LOG
+        // ════════════════════════════════════════════════
+        async function renderLog() {
+            const c = document.getElementById('view-container');
+            setLoading(c, 6);
+            try {
+                const list = (await API.log.list()).data;
+                const actionColors = {
+                    'Input Transaksi': 'bg-green-950/30 text-green-400',
+                    'Tambah Unit': 'bg-blue-950/30 text-blue-400',
+                    'Edit Unit': 'bg-yellow-950/30 text-yellow-400',
+                    'Tambah Karyawan': 'bg-purple-950/30 text-purple-400',
+                    'Input Service': 'bg-orange-950/30 text-orange-400',
+                    'Update Service': 'bg-orange-950/30 text-orange-400',
+                };
+                c.innerHTML = `<div class="bg-slate-500/5 rounded-xl">
+                  <div class="px-5 py-3.5 border-b border-slate-300/5">
+                    <p class="text-xs font-medium text-gray-300">Log Aktivitas Sistem</p>
+                  </div>
+                  <div class="divide-y divide-[#1a1a26]">
+                    ${list.length ? list.map(l=>`<div class="flex items-start gap-4 px-5 py-3.5 hover:bg-[#14141e] transition-colors">
+                      <div class="w-1.5 h-1.5 rounded-full bg-gray-700 mt-1.5 flex-shrink-0"></div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <span class="text-xs font-medium text-gray-300">${l.user}</span>
+                          <span class="px-1.5 py-0.5 rounded-md text-[10px] font-medium ${actionColors[l.aksi]||'bg-[#1a1a26] text-gray-500'}">${l.aksi}</span>
+                        </div>
+                        <p class="text-[11px] text-gray-500 mt-0.5">${l.detail}</p>
+                      </div>
+                      <span class="text-[10px] text-gray-500   whitespace-nowrap flex-shrink-0">${l.waktu}</span>
+                    </div>`).join('') : emptyState('Belum ada log aktivitas')}
+                  </div>
+                </div>`;
+            } catch (e) { c.innerHTML = errorState(e.message, 'renderLog()'); }
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: STOK KASIR
+        // ════════════════════════════════════════════════
+        let _stokKasirCache = [];
+
+        async function renderStokKasir() {
+            const c = document.getElementById('view-container');
+            c.innerHTML = `<div class="space-y-4">
+                <div class="relative">
+                  <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  </svg>
+                  <input id="search-stok" type="text" placeholder="Cari merk, tipe, ID, IMEI..."
+                    class="field pl-10 text-sm" oninput="filterStokKasir(this.value)"/>
+                </div>
+                <div id="stok-kasir-table">${Array(4).fill('<div class="skeleton h-10 w-full rounded-lg mb-2"></div>').join('')}</div>
+              </div>`;
+            await loadStokKasirTable('');
+        }
+
+        async function loadStokKasirTable(q) {
+            const wrap = document.getElementById('stok-kasir-table');
+            if (!wrap) return;
+            try {
+                if (!_stokKasirCache.length || !q) {
+                    _stokKasirCache = (await API.units.list({ status: 'Tersedia', cabang: STATE.user.cabang })).data;
+                }
+                const units = q ? _stokKasirCache.filter(u =>
+                    `${u.merk} ${u.tipe} ${u.unit_id} ${u.imei}`.toLowerCase().includes(q.toLowerCase())
+                ) : _stokKasirCache;
+
+                wrap.innerHTML = `<div class="bg-slate-500/5 rounded-xl">
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-xs">
+                      <thead>
+                        <tr class="text-left text-[10px] uppercase tracking-widest text-gray-500 border-b border-slate-300/5">
+                          <th class="px-4 py-3 font-medium">ID</th>
+                          <th class="px-4 py-3 font-medium">Perangkat</th>
+                          <th class="px-4 py-3 font-medium hidden md:table-cell">Spesifikasi</th>
+                          <th class="px-4 py-3 font-medium hidden lg:table-cell">IMEI</th>
+                          <th class="px-4 py-3 font-medium">Harga Jual</th>
+                          <th class="px-4 py-3 font-medium hidden sm:table-cell">Battery</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${units.length ? units.map(u=>`<tr class="tbl-row">
+                          <td class="px-4 py-3   text-gray-500">${u.unit_id}</td>
+                          <td class="px-4 py-3">
+                            <div class="font-medium text-gray-200">${u.merk}</div>
+                            <div class="text-[10px] text-gray-500">${u.tipe}</div>
+                          </td>
+                          <td class="px-4 py-3 text-gray-500 hidden md:table-cell">${u.storage} · ${u.warna}<br/><span class="text-[10px] text-gray-500">${u.kondisi}</span></td>
+                          <td class="px-4 py-3   text-gray-500 hidden lg:table-cell">${u.imei}</td>
+                          <td class="px-4 py-3   font-semibold text-green-400">${rp(u.harga_jual)}</td>
+                          <td class="px-4 py-3 hidden sm:table-cell">${batteryBar(u.battery)}</td>
+                        </tr>`).join('') : `<tr><td colspan="6">${emptyState('Tidak ada unit tersedia','📦')}</td></tr>`}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="px-4 py-3 border-t border-slate-300/5">
+                    <span class="text-[11px] text-gray-500">${units.length} unit tersedia</span>
+                  </div>
+                </div>`;
+            } catch (e) { wrap.innerHTML = errorState(e.message, 'renderStokKasir()'); }
+        }
+
+        function filterStokKasir(q) { loadStokKasirTable(q); }
+
+        // ════════════════════════════════════════════════
+        // VIEW: INPUT TRANSAKSI
+        // ════════════════════════════════════════════════
+        async function renderInputTransaksi() {
+            const c = document.getElementById('view-container');
+            let units = [];
+            try { units = (await API.units.list({ status: 'Tersedia', cabang: STATE.user.cabang })).data; } catch {}
+
+            c.innerHTML = `<div class="max-w-lg">
+                <div class="bg-slate-500/5 rounded-xl p-5">
+                  <p class="text-xs font-medium text-gray-400 uppercase tracking-widest mb-5">Form Input Penjualan</p>
+                  <div class="space-y-4">
+                    <div>
+                      <label class="label">ID Produk <span class="text-red-400">*</span></label>
+                      <div class="flex gap-2">
+                        <input id="trx-unit-id" type="text" class="field flex-1" placeholder="JYP-IP-BN-001"
+                          oninput="previewUnitById(this.value,${JSON.stringify(units).replace(/"/g,'&quot;')})"/>
+                        <button onclick="modalPilihUnit(${JSON.stringify(units).replace(/"/g,'&quot;')})" class="btn btn-ghost flex-shrink-0">Pilih</button>
+                      </div>
+                    </div>
+
+                    <div id="unit-preview" class="hidden bg-slate-500/5 rounded-xl p-3.5 border border-slate-300/5">
+                      <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-2">Preview Unit</p>
+                      <div id="unit-preview-content"></div>
+                    </div>
+
+                    <div>
+                      <label class="label">Verifikasi IMEI <span class="text-red-400">*</span></label>
+                      <input id="trx-imei" type="text" class="field  " placeholder="Masukkan IMEI unit"/>
+                    </div>
+                    <div>
+                      <label class="label">Catatan</label>
+                      <textarea id="trx-catatan" rows="2" class="field resize-none" placeholder="Opsional..."></textarea>
+                    </div>
+                    <button id="btn-konfirmasi" onclick="konfirmasiTransaksi()" class="btn btn-primary w-full py-2.5">
+                      Konfirmasi Penjualan
+                    </button>
+                  </div>
+                </div>
+              </div>`;
+        }
+
+        function previewUnitById(id, units) {
+            const u = units.find(x => x.unit_id === id);
+            const prev = document.getElementById('unit-preview');
+            const cont = document.getElementById('unit-preview-content');
+            if (u) {
+                prev.classList.remove('hidden');
+                cont.innerHTML = `<div class="flex justify-between items-start">
+                    <div>
+                      <span class="text-sm font-medium text-gray-200">${u.merk} ${u.tipe}</span>
+                      <span class="text-xs text-gray-500 ml-1.5">${u.storage} · ${u.warna}</span>
+                      <div class="text-[10px]   text-gray-500 mt-0.5">${u.imei}</div>
+                    </div>
+                    <span class="text-sm font-semibold   text-green-400">${rp(u.harga_jual)}</span>
+                  </div>`;
+            } else { prev.classList.add('hidden'); }
+        }
+
+        function modalPilihUnit(units) {
+            openModal(`${modalHeader('Pilih Unit')}
+                <div class="space-y-2 max-h-72 overflow-y-auto -mx-1 px-1">
+                  ${units.length ? units.map(u=>`
+                  <div onclick="pilihUnit('${u.unit_id}')" class="flex justify-between items-center p-3.5 rounded-xl border border-slate-300/5 hover:border-[#333] cursor-pointer transition-colors hover:bg-[#14141e]">
+                    <div>
+                      <div class="text-[10px]   text-gray-500 mb-0.5">${u.unit_id}</div>
+                      <div class="text-sm font-medium text-gray-200">${u.merk} ${u.tipe}</div>
+                      <div class="text-[11px] text-gray-500">${u.storage} · ${u.kondisi}</div>
+                    </div>
+                    <span class="text-sm font-semibold   text-green-400">${rp(u.harga_jual)}</span>
+                  </div>`).join('') : emptyState('Tidak ada unit tersedia','📦')}
+                </div>`);
+        }
+
+        function pilihUnit(id) {
+            document.getElementById('trx-unit-id').value = id;
+            document.getElementById('trx-unit-id').dispatchEvent(new Event('input'));
+            closeModalBtn();
+        }
+
+        async function konfirmasiTransaksi() {
+            const unit_id = document.getElementById('trx-unit-id').value.trim();
+            const imei = document.getElementById('trx-imei').value.trim();
+            const catatan = document.getElementById('trx-catatan').value;
+            const btn = document.getElementById('btn-konfirmasi');
+            if (!unit_id || !imei) { showToast('ID Produk dan IMEI wajib diisi', 'error'); return; }
+            btn.innerHTML = `<span class="spinner"></span> Memproses...`;
+            btn.disabled = true;
+            try {
+                const res = await API.transaksi.create({ unit_id, imei, catatan });
+                showToast(`✓ ${res.data.trx_id} berhasil dicatat`, 'success');
+                _stokKasirCache = [];
+                navigate('stok-kasir');
+            } catch (e) { showToast(e.message, 'error');
+                btn.innerHTML = 'Konfirmasi Penjualan';
+                btn.disabled = false; }
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: TAMBAH UNIT (KASIR)
+        // ════════════════════════════════════════════════
+        async function renderTambahUnit() {
+            const c = document.getElementById('view-container');
+            c.innerHTML = `<div class="max-w-xl">
+                <div class="bg-slate-500/5 rounded-xl p-5">
+                  <p class="text-xs font-medium text-gray-400 uppercase tracking-widest mb-5">Form Tambah Unit / Barang Masuk</p>
+                  ${_unitFormFields()}
+                  <button id="btn-simpan-unit" onclick="simpanUnit(true)" class="btn btn-primary w-full mt-4">Simpan Unit</button>
+                </div>
+              </div>`;
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: CUSTOMERS
+        // ════════════════════════════════════════════════
+        async function renderCustomers() {
+            const c = document.getElementById('view-container');
+            setLoading(c, 3);
+            try {
+                const list = (await API.customers.list({ cabang: STATE.user.cabang })).data;
+                c.innerHTML = `<div class="space-y-4">
+                  <div class="flex gap-3">
+                    <div class="relative flex-1">
+                      <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                      </svg>
+                      <input type="text" placeholder="Cari nama / kontak..." class="field pl-10" oninput="searchCustomer(this.value)"/>
+                    </div>
+                    <button onclick="modalTambahCustomer()" class="btn btn-primary flex-shrink-0">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                      Tambah
+                    </button>
+                  </div>
+                  <div id="customer-list" class="bg-slate-500/5 rounded-xl">
+                    ${renderCustomerTable(list)}
+                  </div>
+                </div>`;
+                window._allCustomers = list;
+            } catch (e) { c.innerHTML = errorState(e.message, 'renderCustomers()'); }
+        }
+
+        function renderCustomerTable(list) {
+            if (!list.length) return emptyState('Belum ada customer', '👥');
+            return `<div class="overflow-x-auto">
+                <table class="w-full text-xs">
+                  <thead>
+                    <tr class="text-left text-[10px] uppercase tracking-widest text-gray-500 border-b border-slate-300/5">
+                      <th class="px-5 py-3 font-medium">Nama</th>
+                      <th class="px-5 py-3 font-medium">Kontak</th>
+                      <th class="px-5 py-3 font-medium hidden sm:table-cell">Bergabung</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${list.map(cu=>`<tr class="tbl-row">
+                      <td class="px-5 py-3 font-medium text-gray-200">${cu.nama}</td>
+                      <td class="px-5 py-3   text-gray-500">${cu.kontak}</td>
+                      <td class="px-5 py-3   text-gray-500 hidden sm:table-cell">${cu.created_at}</td>
+                    </tr>`).join('')}
+                  </tbody>
+                </table>
+              </div>
+              <div class="px-5 py-3 border-t border-slate-300/5">
+                <span class="text-[11px] text-gray-500">${list.length} customer</span>
+              </div>`;
+        }
+
+        function searchCustomer(q) {
+            const filtered = q ? window._allCustomers.filter(c => `${c.nama} ${c.kontak}`.toLowerCase().includes(q
+                .toLowerCase())) : window._allCustomers;
+            document.getElementById('customer-list').innerHTML = renderCustomerTable(filtered);
+        }
+
+        function modalTambahCustomer() {
+            openModal(`${modalHeader('Tambah Customer')}
+                <div class="space-y-3">
+                  <div><label class="label">Nama Lengkap</label><input id="cu-nama" type="text" class="field" placeholder="Nama lengkap"/></div>
+                  <div><label class="label">Kontak (HP / Email)</label><input id="cu-kontak" type="text" class="field" placeholder="08xxxxxxxxxx"/></div>
+                </div>
+                <button id="btn-simpan-cu" onclick="simpanCustomer()" class="btn btn-primary w-full mt-4">Simpan Customer</button>`);
+        }
+
+        async function simpanCustomer() {
+            const btn = document.getElementById('btn-simpan-cu');
+            btn.innerHTML = `<span class="spinner"></span> Menyimpan...`;
+            btn.disabled = true;
+            try {
+                await API.customers.create({ nama: document.getElementById('cu-nama').value, kontak: document.getElementById(
+                        'cu-kontak').value, cabang: STATE.user.cabang });
+                closeModalBtn();
+                showToast('Customer berhasil ditambahkan');
+                await renderCustomers();
+            } catch (e) { showToast(e.message, 'error');
+                btn.innerHTML = 'Simpan Customer';
+                btn.disabled = false; }
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: SERVICE TEKNISI
+        // ════════════════════════════════════════════════
+        async function renderServiceTeknisi() {
+            const c = document.getElementById('view-container');
+            setLoading(c, 4);
+            try {
+                const list = (await API.service.list({ cabang: STATE.user.cabang })).data;
+                c.innerHTML = `<div class="space-y-4">
+                  <div class="flex gap-1 flex-wrap" id="svc-filter-btns">
+                    ${['Semua','Masuk','Diagnosa','Proses','Selesai','Diambil'].map((s,i)=>
+                      `<button onclick="filterServiceTeknisi('${s}')" class="filter-tab ${i===0?'active':''}">${s}</button>`).join('')}
+                  </div>
+                  <div id="svc-list">${renderServiceList(list)}</div>
+                </div>`;
+                window._allService = list;
+            } catch (e) { c.innerHTML = errorState(e.message, 'renderServiceTeknisi()'); }
+        }
+
+        function filterServiceTeknisi(status) {
+            document.querySelectorAll('#svc-filter-btns .filter-tab').forEach(b => {
+                b.classList.toggle('active', b.textContent.trim() === status);
+            });
+            const filtered = status === 'Semua' ? window._allService : window._allService.filter(s => s.status === status);
+            document.getElementById('svc-list').innerHTML = renderServiceList(filtered);
+        }
+
+        function renderServiceList(list) {
+            if (!list.length) return `<div class="bg-slate-500/5 rounded-xl py-2">${emptyState('Tidak ada tiket service','🔧')}</div>`;
+            return list.map(s => `<div class="svc-bg-slate-500/5 rounded-xl mb-3 last:mb-0">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap mb-1.5">
+                      <span class="font-mono text-[10px] text-gray-500">${s.service_id}</span>
+                      ${badgeService(s.status)}
+                    </div>
+                    <p class="text-sm font-medium text-gray-200">${s.merk} ${s.tipe}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">
+                      <span class="font-medium text-gray-400">${s.nama_customer}</span>
+                      <span class="text-gray-500"> · </span>${s.kontak_customer}
+                    </p>
+                    <p class="text-xs text-gray-500 mt-0.5">${s.keluhan}</p>
+                    ${s.catatan_kerusakan ? `<p class="text-[11px] text-gray-500 mt-0.5 italic">${s.catatan_kerusakan}</p>` : ''}
+                    <div class="flex items-center gap-3 mt-2 text-[11px] text-gray-500">
+                      <span>Estimasi: <span class="font-mono font-medium text-gray-400">${rp(s.estimasi_biaya)}</span></span>
+                      <span>·</span>
+                      <span class="font-mono">${s.created_at}</span>
+                    </div>
+                  </div>
+                  <button onclick="modalUpdateService('${s.service_id}')" class="btn btn-ghost text-[11px] flex-shrink-0">Update</button>
+                </div>
+                ${s.foto_urls && s.foto_urls.length ? `<div class="flex gap-2 mt-3 flex-wrap pt-3 border-t border-slate-300/5">
+                  ${s.foto_urls.map(p=>`<img src="${p}" class="w-14 h-14 rounded-lg object-cover border border-slate-300/5 cursor-pointer hover:opacity-80 transition-opacity" onclick="window.open('${p}')"/>`).join('')}
+                </div>` : ''}
+              </div>`).join('');
+        }
+
+        async function modalUpdateService(service_id) {
+            const svc = (await API.service.get(service_id)).data;
+            openModal(`${modalHeader('Update Service', `${svc.service_id} · ${svc.merk} ${svc.tipe}`)}
+                <div class="space-y-3">
+                  <div><label class="label">Status Pengerjaan</label>
+                    <select id="svc-status" class="field">
+                      ${['Masuk','Diagnosa','Proses','Selesai','Diambil'].map(st=>`<option ${svc.status===st?'selected':''}>${st}</option>`).join('')}
+                    </select></div>
+                  <div><label class="label">Catatan Kerusakan</label>
+                    <textarea id="svc-catatan" rows="3" class="field resize-none">${svc.catatan_kerusakan||''}</textarea></div>
+                  <div><label class="label">Estimasi Biaya (Rp)</label>
+                    <input id="svc-estimasi" type="number" min="0" value="${svc.estimasi_biaya||0}" class="field  "/></div>
+                  <div>
+                    <label class="label">Upload Foto</label>
+                    <div class="border border-dashed border-slate-300/5 rounded-xl p-4 text-center cursor-pointer hover:border-[#333] transition-colors" onclick="document.getElementById('svc-foto-input').click()">
+                      <input id="svc-foto-input" type="file" accept="image/*" class="hidden" onchange="uploadFotoService('${service_id}',this)"/>
+                      <p class="text-xs text-gray-500">Klik untuk upload foto kondisi barang</p>
+                    </div>
+                    ${svc.foto_urls && svc.foto_urls.length ? `<div class="flex gap-2 mt-2 flex-wrap">${svc.foto_urls.map(p=>`<img src="${p}" class="w-14 h-14 rounded-lg object-cover border border-slate-300/5"/>`).join('')}</div>` : ''}
+                  </div>
+                </div>
+                <button id="btn-update-svc" onclick="updateService('${service_id}')" class="btn btn-primary w-full mt-4">Update Service</button>`);
+        }
+
+        async function uploadFotoService(service_id, input) {
+            const file = input.files[0];
+            if (!file) return;
+            showToast('Mengupload foto...', 'info');
+            try {
+                await API.service.uploadFoto(service_id, file);
+                showToast('Foto berhasil diupload');
+                closeModalBtn();
+                await modalUpdateService(service_id);
+            } catch (e) { showToast(e.message, 'error'); }
+        }
+
+        async function updateService(service_id) {
+            const btn = document.getElementById('btn-update-svc');
+            btn.innerHTML = `<span class="spinner"></span> Menyimpan...`;
+            btn.disabled = true;
+            try {
+                await API.service.update(service_id, {
+                    status: document.getElementById('svc-status').value,
+                    catatan_kerusakan: document.getElementById('svc-catatan').value,
+                    estimasi_biaya: parseInt(document.getElementById('svc-estimasi').value) || 0,
+                });
+                closeModalBtn();
+                showToast('Service berhasil diupdate');
+                await renderServiceTeknisi();
+            } catch (e) { showToast(e.message, 'error');
+                btn.innerHTML = 'Update Service';
+                btn.disabled = false; }
+        }
+
+        // ════════════════════════════════════════════════
+        // VIEW: INPUT SERVICE
+        // ════════════════════════════════════════════════
+        async function renderInputService() {
+            const c = document.getElementById('view-container');
+            c.innerHTML = `<div class="max-w-lg">
+                <div class="bg-slate-500/5 rounded-xl p-5">
+                  <p class="text-xs font-medium text-gray-400 uppercase tracking-widest mb-5">Form Input Service Baru</p>
+                  <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                      <div class="col-span-2"><label class="label">Nama Customer <span class="text-red-400">*</span></label>
+                        <input id="svc-nama-cu" type="text" class="field" placeholder="Nama lengkap customer"/></div>
+                      <div class="col-span-2"><label class="label">Kontak Customer</label>
+                        <input id="svc-kontak-cu" type="text" class="field" placeholder="08xxxxxxxxxx"/></div>
+                      <div><label class="label">Merk HP <span class="text-red-400">*</span></label>
+                        <input id="svc-merk" type="text" class="field" placeholder="Samsung / iPhone..."/></div>
+                      <div><label class="label">Tipe HP <span class="text-red-400">*</span></label>
+                        <input id="svc-tipe" type="text" class="field" placeholder="Galaxy A54..."/></div>
+                    </div>
+                    <div><label class="label">Keluhan <span class="text-red-400">*</span></label>
+                      <textarea id="svc-keluhan" rows="3" class="field resize-none" placeholder="Deskripsikan keluhan customer..."></textarea></div>
+                    <div><label class="label">Catatan Kerusakan Awal</label>
+                      <textarea id="svc-catatan-awal" rows="2" class="field resize-none" placeholder="Opsional..."></textarea></div>
+                    <div><label class="label">Estimasi Biaya (Rp)</label>
+                      <input id="svc-est" type="number" min="0" class="field  " placeholder="0"/></div>
+                    <button id="btn-input-svc" onclick="inputService()" class="btn btn-primary w-full py-2.5">Input Service</button>
+                  </div>
+                </div>
+              </div>`;
+        }
+
+        async function inputService() {
+            const btn = document.getElementById('btn-input-svc');
+            btn.innerHTML = `<span class="spinner"></span> Menyimpan...`;
+            btn.disabled = true;
+            try {
+                const res = await API.service.create({
+                    nama_customer: document.getElementById('svc-nama-cu').value,
+                    kontak_customer: document.getElementById('svc-kontak-cu').value,
+                    merk: document.getElementById('svc-merk').value,
+                    tipe: document.getElementById('svc-tipe').value,
+                    keluhan: document.getElementById('svc-keluhan').value,
+                    catatan_kerusakan: document.getElementById('svc-catatan-awal').value,
+                    estimasi_biaya: parseInt(document.getElementById('svc-est').value) || 0,
+                    cabang: STATE.user.cabang,
+                });
+                showToast(`✓ ${res.data.service_id} berhasil dicatat`, 'success');
+                navigate('service-list');
+            } catch (e) { showToast(e.message, 'error');
+                btn.innerHTML = 'Input Service';
+                btn.disabled = false; }
+        }
+
+        // ════════════════════════════════════════════════
+        // INIT
+        // ════════════════════════════════════════════════
+        (async () => {
+            const token = Token.get();
+            if (token) {
+                try {
+                    const res = await API.auth.me();
+                    STATE.user = res.data;
+                    showApp();
+                } catch {
+                    Token.clear();
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
