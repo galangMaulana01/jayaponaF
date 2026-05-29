@@ -715,6 +715,9 @@
             err.classList.add('hidden');
             try {
                 const res = await API.auth.login(u, p);
+                if (res.user.role === "karyawan") {
+                  res.user.role = "kasir";
+                }
                 Token.set(res.access_token);
                 STATE.user = res.user;
                 showApp();
@@ -784,7 +787,7 @@
             document.getElementById('page-app').classList.remove('hidden');
 
             const { user } = STATE;
-            const roleColors = { owner: '#ef4444', karyawan: '#3b82f6', teknisi: '#10b981' };
+            const roleColors = { owner: '#ef4444', kasir: '#3b82f6', teknisi: '#10b981' };
 
             document.getElementById('user-name').textContent = user.name;
             document.getElementById('user-role-label').textContent = user.role;
@@ -802,14 +805,14 @@
             const ava = document.getElementById("avatar");
             if (user.role == "owner") {
               ava.innerHTML = `${ownerAva}`
-            } else if (user.role == "karyawan") {
+            } else if (user.role == "kasir") {
               ava.innerHTML = `${karyawanAva}`
             } else {
               ava.innerHTML = `${teknisiAva}`
             }
     
             
-            const first = { owner: 'dashboard', karyawan: 'stok-kasir', teknisi: 'service-list' };
+            const first = { owner: 'dashboard', kasir: 'stok-kasir', teknisi: 'service-list' };
             navigate(first[user.role] || 'dashboard');
         }
 
