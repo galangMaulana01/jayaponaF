@@ -715,9 +715,6 @@
             err.classList.add('hidden');
             try {
                 const res = await API.auth.login(u, p);
-                if (res.user.role === "karyawan") {
-                  res.user.role = "kasir";
-                }
                 Token.set(res.access_token);
                 STATE.user = res.user;
                 showApp();
